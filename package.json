@@ -1,6 +1,6 @@
 {
   "name": "ibird-mongoose",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.3",
   "description": "Mongoose addon for ibird.",
   "main": "index.js",
   "repository": {
