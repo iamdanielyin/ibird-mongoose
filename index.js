@@ -10,9 +10,15 @@ const ctx = {};
  * @param app
  */
 function onLoad(app) {
-    let mongo = app.mongo;
+    const config = app.c();
+    let mongo = config.mongo;
     if (typeof mongo === 'string') {
-        mongo = { uri: mongo, opts: null };
+        mongo = {
+            uri: mongo,
+            opts: {
+                useMongoClient: true
+            }
+        };
     }
     mongoose.connect(mongo.uri, mongo.opts);
     app.config({ models: {} });
@@ -53,7 +59,7 @@ function mountRoutes(app) {
  * @param obj
  */
 function model(obj) {
-    if (!obj || !obj.name || !obj.schema) return console.error(`'name' and 'schema' must be provided`);
+    if (!obj || !obj.name || !obj.schema) return;
     const { name, schema, collection, skipInit } = obj;
     if (obj.tombstoneKey) {
         //添加逻辑删除字段
@@ -76,7 +82,7 @@ function model(obj) {
     });
     delete obj.schema;
     models[obj.name] = obj;
-    app.config({ models });
+    ctx.app.config({ models });
     return ctx.app;
 }
 
