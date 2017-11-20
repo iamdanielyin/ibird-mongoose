@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const utility = require('ibird-utils');
-const adapter = require('mongoose-adapter');
+const adapter = require('ibird-mongoose-adapter');
 const jsonSchema = require('mongoose-schema-2-json-schema');
 const rest = require('koa-json-rest');
 const ctx = {};

@@ -3,6 +3,10 @@
   "version": "1.0.0-alpha.1",
   "description": "Mongoose addon for ibird.",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yinfxs/ibird-mongoose.git"
+  },
   "scripts": {
     "start": "node index.js"
   },
@@ -19,8 +23,14 @@
   ],
   "author": "yinfxs",
   "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/yinfxs/ibird-mongoose/issues"
+  },
+  "homepage": "https://github.com/yinfxs/ibird-mongoose#readme",
   "dependencies": {
+    "ibird-mongoose-adapter": "^1.0.0-alpha.2",
     "ibird-utils": "0.9.15",
+    "koa-json-rest": "^1.0.0-alpha.1",
     "mongoose": "4.13.1"
   }
 }
