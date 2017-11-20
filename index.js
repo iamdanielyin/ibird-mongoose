@@ -1,0 +1,101 @@
+const mongoose = require('mongoose');
+const utility = require('ibird-utils');
+const adapter = require('mongoose-adapter');
+const jsonSchema = require('mongoose-schema-2-json-schema');
+const rest = require('koa-json-rest');
+const ctx = {};
+
+/**
+ * 插件加载
+ * @param app
+ */
+function onLoad(app) {
+    let mongo = app.mongo;
+    if (typeof mongo === 'string') {
+        mongo = { uri: mongo, opts: null };
+    }
+    mongoose.connect(mongo.uri, mongo.opts);
+    app.config({ models: {} });
+    ctx.app = app;
+}
+
+/**
+ * 应用启动
+ * @param app
+ */
+function onPlay(app) {
+    mountRoutes(app);
+}
+
+/**
+ * 挂载模型默认接口
+ * @param {Object} app - 应用对象
+ */
+function mountRoutes(app) {
+    const config = app.c();
+    const metadataGetter = app.metadataGetter || (() => config.models);
+    const tombstoneKeyGetter = app.tombstoneKeyGetter ||
+        (ctx.tombstoneKeys ? (name => ctx.tombstoneKeys ? ctx.tombstoneKeys[name] : null) : null);
+    // 数据适配器
+    const dataAdapter = adapter(app.modelGetter, app.getLocaleString, {
+        metadataGetter,
+        tombstoneKeyGetter
+    });
+    // RESTful接口
+    rest(metadataGetter, dataAdapter, {
+        router: app.router,
+        routePrefix: config.defaultRoutePrefix
+    });
+}
+
+/**
+ * 挂载模型
+ * @param obj
+ */
+function model(obj) {
+    if (!obj || !obj.name || !obj.schema) return console.error(`'name' and 'schema' must be provided`);
+    const { name, schema, collection, skipInit } = obj;
+    if (obj.tombstoneKey) {
+        //添加逻辑删除字段
+        const isDeleted = obj.tombstoneKey || '_dr';
+        ctx.tombstoneKeys = ctx.tombstoneKeys || {};
+        ctx.tombstoneKeys[name] = isDeleted;
+        schema.add({
+            [isDeleted]: {
+                type: Boolean,
+                default: false
+            }
+        });
+    }
+    const Model = mongoose.model(name, schema, collection, skipInit);
+    const { models } = ctx.app.c();
+    Object.assign(obj, {
+        Model,
+        rawSchema: obj.schema,
+        jsonSchema: jsonSchema(obj.schema)
+    });
+    delete obj.schema;
+    models[obj.name] = obj;
+    app.config({ models });
+    return ctx.app;
+}
+
+/**
+ * 自动挂载目录
+ * @param dir
+ */
+function modelDir(dir) {
+    utility.recursiveDir(dir, model);
+    return ctx.app;
+}
+
+// 导出插件信息
+module.exports = {
+    name: 'ibird-mongoose',
+    onLoad,
+    onPlay,
+    enable: {
+        model,
+        modelDir
+    }
+};

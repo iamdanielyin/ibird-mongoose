@@ -1,0 +1,26 @@
+{
+  "name": "ibird-mongoose",
+  "version": "1.0.0-alpha.1",
+  "description": "Mongoose addon for ibird.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "ibird",
+    "node",
+    "koa",
+    "web",
+    "app",
+    "http",
+    "application",
+    "framework",
+    "examples"
+  ],
+  "author": "yinfxs",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "ibird-utils": "0.9.15",
+    "mongoose": "4.13.1"
+  }
+}
