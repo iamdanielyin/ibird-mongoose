@@ -91,7 +91,7 @@ function modelDir(dir) {
 
 // 导出插件信息
 module.exports = {
-    name: 'ibird-mongoose',
+    namespace: 'ibird-mongoose',
     onLoad,
     onPlay,
     enable: {
