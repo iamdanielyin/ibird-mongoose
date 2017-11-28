@@ -3,6 +3,7 @@ const utility = require('ibird-utils');
 const rest = require('koa-json-rest');
 const jsonSchema = require('mongoose-schema-2-json-schema');
 const adapter = require('ibird-mongoose-adapter');
+const namespace = 'ibird-mongoose';
 const ctx = {};
 
 // Use native promises
@@ -78,6 +79,10 @@ function model(obj) {
             }
         });
     }
+
+    // Event - ibird-mongoose:model:pre
+    ctx.app.emit(`${namespace}:model:pre`, obj);
+
     const Model = mongoose.model(name, schema, collection, skipInit);
     const { models } = ctx.app.c();
     Object.assign(obj, {
@@ -86,6 +91,10 @@ function model(obj) {
         jsonSchema: jsonSchema(obj.schema)
     });
     delete obj.schema;
+
+    // Event - ibird-mongoose:model:post
+    ctx.app.emit(`${namespace}:model:post`, obj);
+    
     models[obj.name] = obj;
     ctx.app.config({ models });
     return ctx.app;
@@ -102,7 +111,7 @@ function modelDir(dir) {
 
 // 导出插件信息
 module.exports = {
-    namespace: 'ibird-mongoose',
+    namespace,
     onLoad,
     onPlay,
     enable: {
