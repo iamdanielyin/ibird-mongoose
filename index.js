@@ -1,9 +1,12 @@
 const mongoose = require('mongoose');
 const utility = require('ibird-utils');
-const adapter = require('ibird-mongoose-adapter');
-const jsonSchema = require('mongoose-schema-2-json-schema');
 const rest = require('koa-json-rest');
+const jsonSchema = require('mongoose-schema-2-json-schema');
+const adapter = require('ibird-mongoose-adapter');
 const ctx = {};
+
+// Use native promises
+mongoose.Promise = global.Promise;
 
 /**
  * 插件加载
@@ -39,18 +42,20 @@ function onPlay(app) {
  */
 function mountRoutes(app) {
     const config = app.c();
-    const metadataGetter = app.metadataGetter || (() => config.models);
-    const tombstoneKeyGetter = app.tombstoneKeyGetter ||
+    const metadataGetter = config.metadataGetter || (() => config.models);
+    const tombstoneKeyGetter = config.tombstoneKeyGetter ||
         (ctx.tombstoneKeys ? (name => ctx.tombstoneKeys ? ctx.tombstoneKeys[name] : null) : null);
     // 数据适配器
-    const dataAdapter = adapter(app.modelGetter, app.getLocaleString, {
+    config.modelGetter = (typeof config.modelGetter === 'function') ? config.modelGetter : (name => mongoose.model(name));
+    const dataAdapter = adapter(config.modelGetter, {
         metadataGetter,
         tombstoneKeyGetter
     });
     // RESTful接口
     rest(metadataGetter, dataAdapter, {
         router: app.router,
-        routePrefix: config.defaultRoutePrefix
+        routePrefix: config.defaultRoutePrefix,
+        getLocaleString: app.getLocaleString
     });
 }
 
