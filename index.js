@@ -12,8 +12,9 @@ mongoose.Promise = global.Promise;
 /**
  * 插件加载
  * @param app
+ * @param options
  */
-function onLoad(app) {
+function onLoad(app, options) {
     const config = app.c();
     let mongo = config.mongo;
     if (typeof mongo === 'string') {
@@ -27,6 +28,7 @@ function onLoad(app) {
     mongoose.connect(mongo.uri, mongo.opts);
     app.config({ models: {} });
     ctx.app = app;
+    ctx.options = options || {};
 }
 
 /**
@@ -38,24 +40,32 @@ function onPlay(app) {
 }
 
 /**
+ * 判断入参是否为函数类型
+ * @param {function} fn
+ */
+function isFunction(fn) {
+    return typeof fn === 'function' ? true : false;
+}
+
+/**
  * 挂载模型默认接口
  * @param {Object} app - 应用对象
  */
 function mountRoutes(app) {
     const config = app.c();
-    const metadataGetter = config.metadataGetter || (() => config.models);
-    const tombstoneKeyGetter = config.tombstoneKeyGetter ||
-        (ctx.tombstoneKeys ? (name => ctx.tombstoneKeys ? ctx.tombstoneKeys[name] : null) : null);
+    const options = ctx.options;
+    const metadataGetter = isFunction(options.metadataGetter) || isFunction(config.metadataGetter) || (() => config.models);
+    const tombstoneKeyGetter = isFunction(options.tombstoneKeyGetter) || isFunction(config.tombstoneKeyGetter) || (ctx.tombstoneKeys ? (name => ctx.tombstoneKeys ? ctx.tombstoneKeys[name] : null) : null);
     // 数据适配器
-    config.modelGetter = (typeof config.modelGetter === 'function') ? config.modelGetter : (name => mongoose.model(name));
-    const dataAdapter = adapter(config.modelGetter, {
+    const modelGetter = isFunction(options.modelGetter) || isFunction(config.modelGetter) || (name => mongoose.model(name));
+    const dataAdapter = adapter(modelGetter, {
         metadataGetter,
         tombstoneKeyGetter
     });
     // RESTful接口
     rest(metadataGetter, dataAdapter, {
         router: app.router,
-        routePrefix: config.defaultRoutePrefix,
+        routePrefix: options.defaultRoutePrefix || config.defaultRoutePrefix,
         getLocaleString: app.getLocaleString
     });
 }
@@ -94,7 +104,7 @@ function model(obj) {
 
     // Event - ibird-mongoose:model:post
     ctx.app.emit(`${namespace}:model:post`, obj);
-    
+
     models[obj.name] = obj;
     ctx.app.config({ models });
     return ctx.app;
