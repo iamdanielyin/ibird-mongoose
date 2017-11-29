@@ -18,8 +18,13 @@
     "app",
     "http",
     "application",
-    "framework",
-    "examples"
+    "addon",
+    "mongoose",
+    "mongodb",
+    "model",
+    "schema",
+    "metadata",
+    "ibird-addon"
   ],
   "author": "yinfxs",
   "license": "Apache-2.0",
