@@ -54,10 +54,10 @@ function isFunction(fn) {
 function mountRoutes(app) {
     const config = app.c();
     const options = ctx.options;
-    const metadataGetter = isFunction(options.metadataGetter) || isFunction(config.metadataGetter) || (() => config.models);
-    const tombstoneKeyGetter = isFunction(options.tombstoneKeyGetter) || isFunction(config.tombstoneKeyGetter) || (ctx.tombstoneKeys ? (name => ctx.tombstoneKeys ? ctx.tombstoneKeys[name] : null) : null);
+    const metadataGetter = isFunction(options.metadataGetter) || (() => config.models);
+    const tombstoneKeyGetter = isFunction(options.tombstoneKeyGetter) || (ctx.tombstoneKeys ? (name => ctx.tombstoneKeys ? ctx.tombstoneKeys[name] : null) : null);
     // 数据适配器
-    const modelGetter = isFunction(options.modelGetter) || isFunction(config.modelGetter) || (name => mongoose.model(name));
+    const modelGetter = isFunction(options.modelGetter) || (name => mongoose.model(name));
     const dataAdapter = adapter(modelGetter, {
         metadataGetter,
         tombstoneKeyGetter
