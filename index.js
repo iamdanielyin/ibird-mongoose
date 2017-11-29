@@ -15,6 +15,9 @@ mongoose.Promise = global.Promise;
  * @param options
  */
 function onLoad(app, options) {
+    ctx.app = app;
+    ctx.options = options || {};
+    
     const config = app.c();
     let mongo = config.mongo;
     if (typeof mongo === 'string') {
@@ -27,8 +30,6 @@ function onLoad(app, options) {
     }
     mongoose.connect(mongo.uri, mongo.opts);
     app.config({ models: {} });
-    ctx.app = app;
-    ctx.options = options || {};
 }
 
 /**
