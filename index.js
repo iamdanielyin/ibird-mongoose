@@ -4,6 +4,7 @@ const rest = require('koa-json-rest');
 const jsonSchema = require('mongoose-schema-2-json-schema');
 const adapter = require('ibird-mongoose-adapter');
 const namespace = 'ibird-mongoose';
+const mount = require('koa-mount');
 const ctx = {};
 
 // Use native promises
@@ -17,7 +18,7 @@ mongoose.Promise = global.Promise;
 function onLoad(app, options) {
     ctx.app = app;
     ctx.options = options || {};
-    
+
     const config = app.c();
     let mongo = config.mongo;
     if (typeof mongo === 'string') {
@@ -57,6 +58,7 @@ function mountRoutes(app) {
     const options = ctx.options;
     const metadataGetter = isFunction(options.metadataGetter) || (() => config.models);
     const tombstoneKeyGetter = isFunction(options.tombstoneKeyGetter) || (ctx.tombstoneKeys ? (name => ctx.tombstoneKeys ? ctx.tombstoneKeys[name] : null) : null);
+    
     // 数据适配器
     const modelGetter = isFunction(options.modelGetter) || (name => mongoose.model(name));
     const dataAdapter = adapter(modelGetter, {
@@ -68,6 +70,44 @@ function mountRoutes(app) {
         router: app.router,
         routePrefix: options.defaultRoutePrefix || config.defaultRoutePrefix,
         getLocaleString: app.getLocaleString
+    });
+    // 挂载元数据路由
+    if (ctx.options.metadataPath) {
+        mountMetadataRoute(app, ctx.options.metadataPath);
+    }
+
+    Object.assign(ctx, {
+        metadataGetter,
+        tombstoneKeyGetter,
+        modelGetter,
+        dataAdapter
+    });
+}
+
+/**
+ * 挂载元数据接口
+ * @param {Object} app - 应用对象
+ * @param {Object} metadataPath - 应用对象
+ */
+function metadataRoute(app, metadataPath) {
+    if (!metadataPath) return;
+
+    const config = app.c();
+
+    mount(metadataPath, function metadataRoute(ctx) {
+        const name = ctx.query.name || (ctx.request && ctx.request.body ? ctx.request.body.name : null);
+        if (name) {
+            const metadata = config.models[name];
+            return ctx.body = { data: metadata ? metadata.jsonSchema : null };
+        }
+        const array = [];
+        for (const name in config.models) {
+            const metadata = config.models[name];
+            const jsonSchema = metadata ? metadata.jsonSchema : null;
+            if (!jsonSchema) continue;
+            array.push(jsonSchema);
+        }
+        ctx.body = { data: array };
     });
 }
 
