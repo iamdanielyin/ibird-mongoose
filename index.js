@@ -170,7 +170,7 @@ module.exports = {
     namespace,
     onLoad,
     onPlay,
-    enable: {
+    api: {
         model,
         modelDir
     }
