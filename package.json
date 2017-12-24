@@ -37,6 +37,6 @@
     "ibird-utils": "0.9.15",
     "koa-json-rest": "^1.0.0-alpha.3",
     "mongoose": "4.13.7",
-    "mongoose-schema-2-json-schema": "^1.0.0-alpha.4"
+    "mongoose-schema-2-json-schema": "^1.0.0-alpha.5"
   }
 }
