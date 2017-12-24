@@ -19,7 +19,7 @@ function onLoad(app, options) {
     ctx.options = options || {};
 
     const config = app.c();
-    let mongo = config.mongo;
+    let mongo = options.mongo || config.mongo;
     if (typeof mongo === 'string') {
         mongo = {
             uri: mongo,
@@ -30,6 +30,9 @@ function onLoad(app, options) {
     }
     mongoose.connect(mongo.uri, mongo.opts);
     app.config({ models: {} });
+    if (typeof options.dir === 'string') {
+        modelDir(options.dir);
+    }
 }
 
 /**
