@@ -14,7 +14,7 @@ mongoose.Promise = global.Promise;
  * @param app
  * @param options
  */
-function onLoad(app, options) {
+function onload(app, options) {
     ctx.app = app;
     ctx.options = options || {};
 
@@ -39,7 +39,7 @@ function onLoad(app, options) {
  * 应用启动
  * @param app
  */
-function onPlay(app) {
+function onplay(app) {
     mountRoutes(app);
 }
 
@@ -171,8 +171,8 @@ function modelDir(dir) {
 // 导出插件信息
 module.exports = {
     namespace,
-    onLoad,
-    onPlay,
+    onload,
+    onplay,
     api: {
         model,
         modelDir
