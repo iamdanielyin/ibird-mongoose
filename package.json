@@ -1,6 +1,6 @@
 {
   "name": "ibird-mongoose",
-  "version": "1.0.0-alpha.22",
+  "version": "1.0.0-alpha.23",
   "description": "Mongoose addon for ibird.",
   "main": "index.js",
   "repository": {
@@ -35,7 +35,7 @@
   "dependencies": {
     "ibird-mongoose-adapter": "^1.0.0-alpha.3",
     "ibird-utils": "latest",
-    "koa-json-rest": "^1.0.0-alpha.10",
+    "koa-json-rest": "^1.0.0-alpha.11",
     "mongoose": "4.13.7",
     "mongoose-schema-2-json-schema": "latest"
   }
