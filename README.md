@@ -157,5 +157,5 @@ module.exports = {
 ## 相关模块
 
 - **[koa-json-rest](https://github.com/yinfxs/koa-json-rest)** - 模型API的Koa中间件，为数据模型提供控制层的增删改查的功能
-- **[ibird-mongoose-adapter](https://github.com/yinfxs/ibird-mongoose-adapter)** - Mongoosee数据源模块，封装持久层的增删改查以供上层调用
+- **[ibird-mongoose-adapter](https://github.com/yinfxs/ibird-mongoose-adapter)** - Mongoosee适配器，封装持久层的增删改查以供上层调用
 - **[mongoose-schema-2-json-schema](https://github.com/yinfxs/mongoose-schema-2-json-schema)** - 将Mongoosee的Schema转换为JSON-Schema格式
